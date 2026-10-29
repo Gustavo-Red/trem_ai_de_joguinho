@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <link rel="icon" type="image/x-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0liv2jOqBHEJxBQUJGKOiyimX2OfTWdj15HJUBjLdag&s=10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Chakra+Petch:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================================
+           CORES E MEDIDAS (variáveis CSS)
+           Mude aqui e a página inteira acompanha.
+           ========================================================= */
+        :root {
+            --sala:    #2B2533;   /* cor de reserva, se a foto não carregar */
+            --tinta:   #EFEBF4;   /* texto principal */
+            --tinta-2: #C9C2D3;   /* texto secundário */
+
+            /* Paleta da tela do Game Boy original */
+            --lcd-1: #9BBC0F;
+            --lcd-2: #8BAC0F;
+            --lcd-3: #306230;
+            --lcd-4: #0F380F;
+
+            --tamanho-icone: 112px;   /* tamanho de cada ícone */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--tinta);
+            /* Laterais da tela: degradê escuro e sutil */
+            background: linear-gradient(160deg, #221D29, #131017);
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           CONTAINER HORIZONTAL COM A FOTO DE FUNDO
+           ========================================================= */
+        .pagina {
+            max-width: 1360px;
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: 40px 32px;
+            /* O primeiro item do background fica na frente, o último fica atrás */
+            background:
+                linear-gradient(rgba(30, 24, 38, 0.45), rgba(30, 24, 38, 0.75)),
+                url("https://i.pinimg.com/1200x/58/c1/ec/58c1ec8a86560d3419852f9ba061aaa3.jpg") center / cover no-repeat,
+                var(--sala);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 48px;
+        }
+
+        /* =========================================================
+           TOPO: A TELA DO GAME BOY
+           ========================================================= */
+        .moldura {
+            width: 100%;
+            max-width: 680px;
+            background-color: #5B5966;
+            padding: 20px 26px 28px;
+            border-radius: 14px 14px 56px 14px;   /* canto inferior direito bem redondo, como no Game Boy */
+            box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.25), 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .moldura-topo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            color: #C9C6D3;
+            font-size: 14px;
+        }
+
+        .moldura-topo img {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        /* A luzinha de "ligado" */
+        .led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4A2A2A;
+            margin-left: auto;
+            animation: liga-led 0.1s 0.3s forwards;
+        }
+
+        .lcd {
+            background-color: var(--lcd-1);
+            border-radius: 6px;
+            padding: clamp(24px, 5vw, 40px);
+            /* linhas finas imitando os pixels da tela */
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(15, 56, 15, 0.06) 0px,
+                rgba(15, 56, 15, 0.06) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+            box-shadow: inset 0 0 0 4px var(--lcd-2), inset 0 6px 18px rgba(15, 56, 15, 0.35);
+            animation: liga-tela 0.9s ease-out;
+        }
+
+        .lcd h1 {
+            font-family: 'Black Ops One', sans-serif;
+            font-weight: 400;
+            font-size: clamp(40px, 7vw, 64px);
+            line-height: 1;
+            color: var(--lcd-4);
+            text-shadow: 3px 3px 0 var(--lcd-2);
+        }
+
+        .lcd p {
+            margin-top: 16px;
+            font-size: clamp(16px, 2.2vw, 18px);
+            font-weight: 500;
+            color: var(--lcd-3);
+        }
+
+        /* Cursor piscando no fim da frase */
+        .cursor {
+            display: inline-block;
+            width: 0.6em;
+            height: 1em;
+            margin-left: 4px;
+            vertical-align: -0.12em;
+            background-color: var(--lcd-3);
+            animation: pisca 1s steps(1) infinite;
+        }
+
+        /* Animações: a tela "acende" uma única vez ao abrir a página */
+        @keyframes liga-tela {
+            0%   { filter: brightness(0.35); }
+            30%  { filter: brightness(1.3); }
+            45%  { filter: brightness(0.6); }
+            100% { filter: brightness(1); }
+        }
+
+        @keyframes liga-led {
+            to { background-color: #E8352B; box-shadow: 0 0 8px #E8352B; }
+        }
+
+        @keyframes pisca {
+            50% { opacity: 0; }
+        }
+
+        /* =========================================================
+           ICON VIEW: a grade de ícones
+           ========================================================= */
+        .icones {
+            list-style: none;
+            display: grid;
+            /* colunas de largura fixa; quantas couberem na linha */
+            grid-template-columns: repeat(auto-fit, 140px);
+            justify-content: center;
+            gap: 28px 16px;
+            width: 100%;
+        }
+
+        /* Cada ícone é um link inteiro: clicou em qualquer parte, abre a pasta */
+        .icone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 6px;
+            text-decoration: none;
+            color: var(--tinta);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            transition: background-color 0.15s, border-color 0.15s;
+        }
+
+        /* Igual a um gerenciador de arquivos: o ícone fica "selecionado" */
+        .icone:hover,
+        .icone:focus-visible {
+            background-color: rgba(255, 255, 255, 0.10);
+            border-color: var(--cor);
+            outline: none;
+        }
+
+        /* Caixa da imagem. A sigla fica por baixo: se a imagem não carregar, ela aparece. */
+        .imagem {
+            position: relative;
+            width: var(--tamanho-icone);
+            height: var(--tamanho-icone);
+            background-color: white;
+            border-radius: 22px;
+            border-bottom: 6px solid var(--cor);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 0.15s;
+        }
+
+        .icone:hover .imagem {
+            transform: translateY(-4px);
+        }
+
+        .sigla {
+            font-family: 'Black Ops One', sans-serif;
+            font-size: 24px;
+            color: var(--cor);
+        }
+
+        .imagem img,
+        .imagem svg {
+            position: absolute;
+            inset: 12px;
+            width: calc(100% - 24px);
+            height: calc(100% - 24px);
+            object-fit: contain;
+            background-color: white;
+        }
+
+        .nome {
+            font-family: 'Black Ops One', sans-serif;
+            font-size: 20px;
+            line-height: 1;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        .ano {
+            font-size: 14px;
+            color: var(--tinta-2);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        /* =========================================================
+           RODAPÉ
+           ========================================================= */
+        footer {
+            margin-top: auto;
+            text-align: center;
+            color: var(--tinta-2);
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           CORES DE CADA CONSOLE
+           ========================================================= */
+        .nes  { --cor: #C8102E; }
+        .snes { --cor: #7A5BD0; }
+        .ps1  { --cor: #6A7FC0; }
+        .n64  { --cor: #00A85C; }
+        .gbc  { --cor: #E0A100; }
+        .gba  { --cor: #6A58D8; }
+        .psp  { --cor: #2F7BE8; }
+        .nds  { --cor: #9AA4B2; }
+
+        /* =========================================================
+           CELULAR: ícones um pouco menores
+           ========================================================= */
+        @media (max-width: 620px) {
+            :root {
+                --tamanho-icone: 88px;
+            }
+
+            .pagina {
+                padding: 24px 16px;
+            }
+
+            .icones {
+                grid-template-columns: repeat(auto-fit, 110px);
+                gap: 20px 8px;
+            }
+
+            .moldura {
+                padding: 14px 14px 22px;
+                border-radius: 12px 12px 40px 12px;
+            }
+        }
+
+        /* Quem pediu ao sistema menos movimento não vê as animações */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+
+            .led {
+                background-color: #E8352B;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="pagina">
+
+    <!-- ===================== TOPO ===================== -->
+    <header class="moldura">
+        <div class="moldura-topo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0liv2jOqBHEJxBQUJGKOiyimX2OfTWdj15HJUBjLdag&s=10" alt="">
+            <span>8 consoles, de 1983 a 2004</span>
+            <span class="led" aria-hidden="true"></span>
+        </div>
+        <div class="lcd">
+            <h1>My retro games list</h1>
+            <p>Escolha um console para abrir a pasta de jogos<span class="cursor" aria-hidden="true"></span></p>
+        </div>
+    </header>
+
+    <!-- ===================== ICON VIEW =====================
+         O "title" de cada link aparece como dica quando o mouse para em cima. -->
+    <ul class="icones">
+
+        <li>
+            <a class="icone nes" href="https://drive.google.com/drive/folders/1LccRjQkxSYTufXTMgzxUyjYO3JsI2aa-?usp=sharing" target="_blank" rel="noopener"
+               title="Nintendo Entertainment System: o Nintendinho, que apresentou o mundo a Mario, Link e Samus.">
+                <span class="imagem">
+                    <span class="sigla">NES</span>
+                    <!-- Controle desenhado em SVG (troque por um <img> se quiser) -->
+                    <svg viewBox="0 0 120 60" aria-hidden="true">
+                        <rect x="2" y="8" width="116" height="44" rx="4" fill="#CFCBC4"/>
+                        <rect x="8" y="14" width="104" height="32" rx="2" fill="#2E2A33"/>
+                        <rect x="18" y="26" width="18" height="6" fill="#CFCBC4"/>
+                        <rect x="24" y="20" width="6" height="18" fill="#CFCBC4"/>
+                        <rect x="48" y="28" width="9" height="3" rx="1.5" fill="#8E8A86"/>
+                        <rect x="61" y="28" width="9" height="3" rx="1.5" fill="#8E8A86"/>
+                        <circle cx="84" cy="30" r="6" fill="#C8102E"/>
+                        <circle cx="100" cy="30" r="6" fill="#C8102E"/>
+                    </svg>
+                </span>
+                <span class="nome">NES</span>
+                <span class="ano">1983</span>
+            </a>
+        </li>
+
+        <li>
+            <a class="icone snes" href="https://drive.google.com/drive/folders/1xl24S37n9kIDPjBbsbu5OWs_w2_55Uu_?usp=sharing" target="_blank" rel="noopener"
+               title="Super Nintendo: o auge da era 16 bits.">
+                <span class="imagem">
+                    <span class="sigla">SNES</span>
+                    <img src="https://i.pinimg.com/736x/18/69/13/186913b1065ffc9f2d1ab55fcbefe3aa.jpg" alt="" onerror="this.remove()">
+                </span>
+                <span class="nome">SNES</span>
+                <span class="ano">1990</span>
+            </a>
+        </li>
+
+        <li>
+            <a class="icone ps1" href="https://drive.google.com/drive/folders/1W5FVZXi92zwMF9q7I0wyqCMQmGjyGnIC?usp=sharing" target="_blank" rel="noopener"
+               title="PlayStation: trocou os cartuchos pelo CD e levou o 3D para dentro de casa.">
+                <span class="imagem">
+                    <span class="sigla">PS1</span>
+                    <img src="https://static.wikitide.net/avidwiki/3/32/PlayStation_%281998%29.png" alt="" onerror="this.remove()">
+                </span>
+                <span class="nome">PS1</span>
+                <span class="ano">1994</span>
+            </a>
+        </li>
+
+        <li>
+            <a class="icone n64" href="https://drive.google.com/drive/folders/1p_bQD8Qh_ejWHiSYRf12eLug0fXccMSL?usp=sharing" target="_blank" rel="noopener"
+               title="Nintendo 64: ensinou como se joga em 3D e popularizou o controle analógico.">
+                <span class="imagem">
+                    <span class="sigla">N64</span>
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNmX4KfbZEKoP8XZAydBQ8nfN5FD8VEbqOwGfrHiSrUdXaZDGDBWLJmovh&s=10" alt="" onerror="this.remove()">
+                </span>
+                <span class="nome">N64</span>
+                <span class="ano">1996</span>
+            </a>
+        </li>
+
+        <li>
+            <a class="icone gbc" href="https://drive.google.com/drive/folders/1g6PPUHWZQ9uZo2oWaT2f6WYlEv0Nz60M?usp=sharing" target="_blank" rel="noopener"
+               title="Game Boy Color: trouxe cores ao portátil mais famoso do mundo.">
+                <span class="imagem">
+                    <span class="sigla">GBC</span>
+                    <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Game_Boy_Color_logo.svg/960px-Game_Boy_Color_logo.svg.png" alt="" onerror="this.remove()">
+                </span>
+                <span class="nome">GBC</span>
+                <span class="ano">1998</span>
+            </a>
+        </li>
+
+        <li>
+            <a class="icone gba" href="https://drive.google.com/drive/folders/1nlmz4-BbosAQE17bL1B6azArazQUY8c-?usp=sharing" target="_blank" rel="noopener"
+               title="Game Boy Advance: o poder de um Super Nintendo no bolso.">
+                <span class="imagem">
+                    <span class="sigla">GBA</span>
+                    <img src="https://i.pinimg.com/736x/ef/60/b8/ef60b8668877e05af13084f8f44e9afe.jpg" alt="" onerror="this.remove()">
+                </span>
+                <span class="nome">GBA</span>
+                <span class="ano">2001</span>
+            </a>
+        </li>
+
+        <li>
+            <a class="icone psp" href="https://drive.google.com/drive/folders/1G71zk77IE-pRhTEc8Mn_CFgCd7GZjlzL?usp=sharing" target="_blank" rel="noopener"
+               title="PlayStation Portable: gráficos quase de console de mesa na palma da mão.">
+                <span class="imagem">
+                    <span class="sigla">PSP</span>
+                    <img src="https://i.pinimg.com/564x/db/b5/21/dbb521fd524989becea0192abb318344.jpg" alt="" onerror="this.remove()">
+                </span>
+                <span class="nome">PSP</span>
+                <span class="ano">2004</span>
+            </a>
+        </li>
+
+        <li>
+            <a class="icone nds" href="https://drive.google.com/drive/folders/1oKetvKobzvNt7bTEzNEVLGVD7BZsM2S0?usp=sharing" target="_blank" rel="noopener"
+               title="Nintendo DS: duas telas, uma delas sensível ao toque.">
+                <span class="imagem">
+                    <span class="sigla">NDS</span>
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQfMqGRI4jyy-HBMJljpmB34cwAUvFtjEoqOV3yG_cBlUiEls8YWYmZWfq4gZIwIUhGGZ6b6kdKeYZDR8yRnMe2Bh6lnUhzm9qdcITf_DY-MTLjLQ6jqs9lyTkVUcR3-5rdMMAIq9Cygor/s1600/nintendo-ds-logo.jpg" alt="" onerror="this.remove()">
+                </span>
+                <span class="nome">NDS</span>
+                <span class="ano">2004</span>
+            </a>
+        </li>
+
+    </ul>
+
+    <footer>
+        <p>Os consoles estão em ordem de lançamento.</p>
+    </footer>
+
+</div> <!-- fim da .pagina -->
+</body>
+</html>
